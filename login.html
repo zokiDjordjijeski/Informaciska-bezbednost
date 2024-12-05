@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Најава</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .form-container {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    .form-container h2 {
+      text-align: center;
+    }
+    form label {
+      display: block;
+      margin-bottom: 8px;
+    }
+    form input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    form button {
+      width: 100%;
+      padding: 10px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    form button:hover {
+      background-color: #0056b3;
+    }
+    .register-link {
+      text-align: center;
+      display: block;
+      margin-top: 10px;
+      color: #007BFF;
+      text-decoration: none;
+    }
+    .register-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<div class="form-container">
+  <h2>Најави се</h2>
+  <form id="loginForm">
+    <label for="email">Email:</label>
+    <input type="email" id="email" required>
+
+    <label for="password">Лозинка:</label>
+    <input type="password" id="password" required>
+
+    <label for="code">Код за верификација:</label>
+    <input type="text" id="code" required>
+
+    <button type="submit">Најави се</button>
+  </form>
+  <a href="register.html" class="register-link">Немаш профил? Регистрирај се</a>
+</div>
+
+<script>
+  document.getElementById("loginForm").addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const code = document.getElementById("code").value;
+
+    // Преземање на податоците од localStorage
+    const user = JSON.parse(localStorage.getItem(email));
+    if (!user) {
+      alert("Корисникот не постои!");
+      return;
+    }
+
+    // Хаширање и проверка на лозинката
+    const hashedPassword = CryptoJS.SHA256(password).toString();
+    if (user.password !== hashedPassword) {
+      alert("Погрешна лозинка!");
+      return;
+    }
+
+    // Проверка на 2FA кодот
+    console.log("Validniot kod: " + user.verificationCode + " Vnesen kod: "+ code)
+
+    if (user.verificationCode != code) {
+      alert("Невалиден код за верификација!");
+      return;
+    }
+
+    alert("Успешно се најавивте!");
+    window.location.href = "success.html";
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Регистрација</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .form-container {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    .form-container h2 {
+      text-align: center;
+    }
+    form label {
+      display: block;
+      margin-bottom: 8px;
+    }
+    form input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    form button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    form button:hover {
+      background-color: #45a049;
+    }
+    .login-link {
+      text-align: center;
+      display: block;
+      margin-top: 10px;
+      color: #007BFF;
+      text-decoration: none;
+    }
+    .login-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<div class="form-container">
+  <h2>Регистрација</h2>
+  <form id="registerForm">
+    <label for="username">Корисничко име:</label>
+    <input type="text" id="username" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" required>
+
+    <label for="password">Лозинка:</label>
+    <input type="password" id="password" required>
+
+    <button type="submit">Регистрирај се</button>
+  </form>
+  <a href="login.html" class="login-link">Веќе имаш профил? Најави се</a>
+</div>
+
+<script>
+  document.getElementById("registerForm").addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const username = document.getElementById("username").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    // Хаширање на лозинката
+    const hashedPassword = CryptoJS.SHA256(password).toString();
+
+    // Проверка дали корисникот веќе постои
+    if (localStorage.getItem(email)) {
+      alert("Корисникот веќе постои!");
+      return;
+    }
+
+    // Генерирање и зачувување на кориснички податоци
+    const verificationCode = Math.floor(100000 + Math.random() * 900000); // 6-цифрен код
+    localStorage.setItem(email, JSON.stringify({
+      username,
+      password: hashedPassword,
+      verificationCode,
+      verified: false
+    }));
+
+    console.log(verificationCode)
+    alert(`Успешно се регистриравте! Код за верификација: ` + verificationCode);
+    window.location.href = "login.html";
+
+  });
+</script>
+</body>
+</html>

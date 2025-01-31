@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        .role-message {
+            font-size: 18px;
+            color: #555;
+            margin: 20px 0;
+        }
+
+        .links {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+        }
+
+        .links a {
+            text-decoration: none;
+            color: #fff;
+            background: #007bff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .links a:hover {
+            background: #0056b3;
+        }
+
+        .logout {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .logout button {
+            padding: 10px 20px;
+            background: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .logout button:hover {
+            background: #a71d2a;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Welcome to the Home Page</h1>
+    <div class="role-message">
+        <p>Your role is: <span id="role"></span></p>
+        <!-- Messages -->
+        <div id="message" class="message"></div>
+        <div id="error" class="error"></div>
+
+        <!-- Navigation -->
+        <div class="nav">
+            <a href="/users">Admin Panel</a>
+        </div>
+    </div>
+    <div class="links">
+        <a href="/admin" id="admin-link" style="display: none;">Admin Page</a>
+        <a href="/user" id="user-link" style="display: none;">User Page</a>
+    </div>
+    <div class="logout">
+        <button onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<script>
+    // Fetch the user role dynamically
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const response = await fetch('/api/get-role');
+            if (!response.ok) {
+                throw new Error('Failed to fetch role.');
+            }
+            const data = await response.json();
+
+            // Update the role message
+            document.getElementById('role').textContent = data.role;
+
+            // Display appropriate links based on role
+            if (data.role === 'admin') {
+                document.getElementById('admin-link').style.display = 'block';
+            } else if (data.role === 'user') {
+                document.getElementById('user-link').style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error fetching role:', error);
+        }
+    });
+
+    // Logout function
+    function logout() {
+        fetch('/logout', { method: 'POST' })
+            .then(() => {
+                window.location.href = '/login';
+            })
+            .catch((error) => {
+                console.error('Logout error:', error);
+            });
+    }
+</script>
+</body>
+</html>

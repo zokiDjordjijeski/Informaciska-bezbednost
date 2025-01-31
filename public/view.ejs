@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewpoint" content="width=device-width, initial-scale=1.0">
+    <title>User List</title>
+    <link rel="stylesheet" href="viewc.css">
+</head>
+<body>
+<h1>User List</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Role</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% users.forEach(user => { %>
+        <tr>
+            <td><%= user.username %></td>
+            <td><%= user.email %></td>
+            <td><%= user.role %></td>
+            <td>
+                <select id="role-<%= user.email %>" onchange="updateRole('<%= user.email %>')">
+                    <option value="user" <%= user.role === 'user' ? 'selected' : '' %>>User</option>
+                    <option value="moderator" <%= user.role === 'moderator' ? 'selected' : '' %>>Moderator</option>
+                </select>
+        </tr>
+    <% }); %>
+    </tbody>
+</table>
+<script>
+    async function updateRole(email) {
+        const selectElement = document.getElementById(`role-${email}`);
+        const newRole = selectElement.value;
+
+        try {
+            const response = await fetch('/update-roles', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, role: newRole }),
+            });
+
+            if (response.ok) {
+                alert('Role updated successfully.');
+            } else {
+                alert('Failed to update role.');
+            }
+        } catch (error) {
+            console.error('Error updating role:', error);
+            alert('An error occurred while updating the role.');
+        }
+    }
+
+    function deleteUser(userId) {
+        console.log(`Delete User ID: ${userId}`);
+    }
+
+</script>
+</body>
+</html>
